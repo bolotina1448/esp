@@ -1,0 +1,11 @@
+[
+  {
+    "modid": "playeresp",
+    "name": "PlayerESP",
+    "description": "Draws boxes around players through walls. Toggle with J (rebindable).",
+    "version": "${version}",
+    "mcversion": "1.8.9",
+    "authorList": [],
+    "dependencies": []
+  }
+]
