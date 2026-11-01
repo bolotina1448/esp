@@ -121,7 +121,7 @@ public class ScaffoldHandler {
             prevSlot = -1;
             return;
         }
-        if (!(p.movementInput instanceof ScaffoldMovementInput)) {
+        if (!ScaffoldMovementInput.chainContains(p.movementInput, ScaffoldMovementInput.class)) {
             p.movementInput = new ScaffoldMovementInput(p.movementInput, this);
         }
 
