@@ -1,4 +1,4 @@
-package com.scaffold;
+package com.safewalk;
 
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -11,27 +11,27 @@ import org.lwjgl.input.Keyboard;
 
 import java.io.File;
 
-@Mod(modid = ScaffoldMod.MODID, name = "Scaffold", version = "1.0.0",
+@Mod(modid = SafeWalkMod.MODID, name = "SafeWalk", version = "1.0.0",
         acceptedMinecraftVersions = "[1.8.9]", acceptableRemoteVersions = "*")
-public class ScaffoldMod {
+public class SafeWalkMod {
 
-    public static final String MODID = "scaffold";
+    public static final String MODID = "safewalk";
 
-    public static ScaffoldConfig config;
+    public static SafeWalkConfig config;
     public static KeyBinding toggleKey;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        config = new ScaffoldConfig(new File(event.getModConfigurationDirectory(), "scaffold.properties"));
+        config = new SafeWalkConfig(new File(event.getModConfigurationDirectory(), "safewalk.properties"));
         config.load();
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        toggleKey = new KeyBinding("Toggle Scaffold", Keyboard.KEY_J, "Scaffold");
+        toggleKey = new KeyBinding("Toggle SafeWalk", Keyboard.KEY_K, "SafeWalk");
         ClientRegistry.registerKeyBinding(toggleKey);
 
-        MinecraftForge.EVENT_BUS.register(new ScaffoldHandler());
-        ClientCommandHandler.instance.registerCommand(new ScaffoldCommand());
+        MinecraftForge.EVENT_BUS.register(new SafeWalkHandler());
+        ClientCommandHandler.instance.registerCommand(new SafeWalkCommand());
     }
 }

@@ -1,4 +1,4 @@
-name: Build Scaffold
+name: Build SafeWalk
 on:
   push:
   pull_request:
@@ -33,19 +33,19 @@ jobs:
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
-          name: Scaffold-1.8.9
+          name: SafeWalk-1.8.9
           path: build/libs/*.jar
 
       - name: Publish release
         if: github.event_name != 'pull_request'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: scaffold-latest
-          name: Scaffold 1.8.9 (latest build)
+          tag_name: safewalk-latest
+          name: SafeWalk 1.8.9 (latest build)
           target_commitish: ${{ github.sha }}
           make_latest: false
           body: |
-            Scaffold + клатч в стиле Augustus для Minecraft 1.8.9 Forge / LabyMod.
-            Скачай `Scaffold-1.8.9.jar` ниже и положи в `.minecraft/mods`.
-            J — вкл/выкл, `/sc` — настройки.
+            SafeWalk для Minecraft 1.8.9 Forge / LabyMod. Работает только с блоком в руке, без приседания.
+            Скачай `SafeWalk-1.8.9.jar` ниже и положи в `.minecraft/mods`.
+            K — вкл/выкл, `/sw` — настройки. Совместим с модом Scaffold.
           files: build/libs/*.jar

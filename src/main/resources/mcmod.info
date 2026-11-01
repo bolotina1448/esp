@@ -1,8 +1,8 @@
 [
   {
     "modid": "${modid}",
-    "name": "Scaffold",
-    "description": "Scaffold + block clutch in the style of Augustus: silent rotations, GCD fix, MoveFix, extra block search. Command: /sc",
+    "name": "SafeWalk",
+    "description": "SafeWalk without sneaking, only while holding a block. Command: /sw",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "url": "",
