@@ -1,8 +1,8 @@
 [
   {
     "modid": "${modid}",
-    "name": "FastBreak + Backtrack + Clutch",
-    "description": "FastBreak for HvH servers. Modes: Polar / Threshold / Multiplier / Blatant. Commands: /fb, /bt, /cl",
+    "name": "Scaffold",
+    "description": "Scaffold + block clutch in the style of Augustus: silent rotations, GCD fix, MoveFix, extra block search. Command: /sc",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "url": "",

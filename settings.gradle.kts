@@ -23,4 +23,4 @@ plugins {
 }
 
 
-rootProject.name = "FastBreak"
+rootProject.name = "Scaffold"

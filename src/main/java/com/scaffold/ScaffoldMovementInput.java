@@ -1,4 +1,4 @@
-package com.fastbreak.clutch;
+package com.scaffold;
 
 import net.minecraft.util.MovementInput;
 
@@ -7,12 +7,12 @@ import net.minecraft.util.MovementInput;
  * внутри EntityPlayerSP.onLivingUpdate() — прямо перед расчётом движения и отправкой C03.
  * Это единственная точка без миксинов, где можно подменить поворот для сервера и сделать MoveFix.
  */
-public class ClutchMovementInput extends MovementInput {
+public class ScaffoldMovementInput extends MovementInput {
 
     public final MovementInput parent;
-    private final ClutchHandler handler;
+    private final ScaffoldHandler handler;
 
-    public ClutchMovementInput(MovementInput parent, ClutchHandler handler) {
+    public ScaffoldMovementInput(MovementInput parent, ScaffoldHandler handler) {
         this.parent = parent;
         this.handler = handler;
     }

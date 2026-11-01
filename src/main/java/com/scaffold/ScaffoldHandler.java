@@ -1,6 +1,5 @@
-package com.fastbreak.clutch;
+package com.scaffold;
 
-import com.fastbreak.FastBreakMod;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.BlockFalling;
@@ -40,7 +39,7 @@ import java.util.Random;
  *           ванила двигает игрока и шлёт C03 уже с ними;
  *  END    — ставим блок (C08 уходит после C03 этого тика) и возвращаем камеру как была.
  */
-public class ClutchHandler {
+public class ScaffoldHandler {
 
     private static final class Plan {
         final BlockPos target;
@@ -79,13 +78,13 @@ public class ClutchHandler {
 
     @SubscribeEvent
     public void onKey(InputEvent.KeyInputEvent event) {
-        if (FastBreakMod.clutchKey != null && FastBreakMod.clutchKey.isPressed()) {
-            ClutchConfig c = FastBreakMod.clutchConfig;
+        if (ScaffoldMod.toggleKey != null && ScaffoldMod.toggleKey.isPressed()) {
+            ScaffoldConfig c = ScaffoldMod.config;
             c.enabled = !c.enabled;
             c.save();
             if (mc.thePlayer != null) {
-                mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.DARK_AQUA + "[CL] "
-                        + EnumChatFormatting.RESET + "Clutch "
+                mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.DARK_AQUA + "[SC] "
+                        + EnumChatFormatting.RESET + "Scaffold "
                         + (c.enabled ? EnumChatFormatting.GREEN + "ON" : EnumChatFormatting.RED + "OFF")
                         + EnumChatFormatting.GRAY + " [" + c.mode.display + "]"));
             }
@@ -103,10 +102,10 @@ public class ClutchHandler {
 
     @SubscribeEvent
     public void onOverlay(RenderGameOverlayEvent.Text event) {
-        ClutchConfig c = FastBreakMod.clutchConfig;
+        ScaffoldConfig c = ScaffoldMod.config;
         if (!c.enabled || !c.hud || mc.thePlayer == null) return;
         int blocks = countBlocks(mc.thePlayer);
-        event.right.add(EnumChatFormatting.AQUA + "Clutch " + EnumChatFormatting.GRAY + c.mode.display
+        event.right.add(EnumChatFormatting.AQUA + "Scaffold " + EnumChatFormatting.GRAY + c.mode.display
                 + " " + (blocks > 0 ? EnumChatFormatting.WHITE : EnumChatFormatting.RED) + blocks
                 + (plan != null ? EnumChatFormatting.GREEN + " ●" : ""));
     }
@@ -122,8 +121,8 @@ public class ClutchHandler {
             prevSlot = -1;
             return;
         }
-        if (!(p.movementInput instanceof ClutchMovementInput)) {
-            p.movementInput = new ClutchMovementInput(p.movementInput, this);
+        if (!(p.movementInput instanceof ScaffoldMovementInput)) {
+            p.movementInput = new ScaffoldMovementInput(p.movementInput, this);
         }
 
         cameraYaw = p.rotationYaw;
@@ -133,14 +132,14 @@ public class ClutchHandler {
             serverPitch = cameraPitch;
         }
 
-        ClutchConfig c = FastBreakMod.clutchConfig;
+        ScaffoldConfig c = ScaffoldMod.config;
         if (p.onGround) sameY = MathHelper.floor_double(p.posY) - 1;
 
         boolean want = c.enabled && mc.currentScreen == null && !p.capabilities.isFlying && !p.isSpectator()
                 && !p.isInWater() && !p.isInLava() && !p.isOnLadder();
 
         clutching = want && isFalling(p, c);
-        boolean bridging = want && c.mode == ClutchConfig.Mode.SCAFFOLD && !clutching && needsBridge(p);
+        boolean bridging = want && c.mode == ScaffoldConfig.Mode.SCAFFOLD && !clutching && needsBridge(p);
         want = clutching || bridging;
 
         if (want && !selectBlocks(p, c)) want = false;
@@ -201,7 +200,7 @@ public class ClutchHandler {
 
         if (placeCooldown > 0) placeCooldown--;
         if (appliedThisTick && plan != null && placeCooldown <= 0) {
-            tryPlace(p, FastBreakMod.clutchConfig);
+            tryPlace(p, ScaffoldMod.config);
         }
         if (appliedThisTick) {
             p.rotationYaw = cameraYaw;
@@ -209,7 +208,7 @@ public class ClutchHandler {
         }
     }
 
-    private void tryPlace(EntityPlayerSP p, ClutchConfig c) {
+    private void tryPlace(EntityPlayerSP p, ScaffoldConfig c) {
         ItemStack stack = p.getHeldItem();
         if (!isGoodBlock(stack)) return;
 
@@ -237,7 +236,7 @@ public class ClutchHandler {
 
     // ------------------------------------------------------------------ когда срабатывать
 
-    private boolean isFalling(EntityPlayerSP p, ClutchConfig c) {
+    private boolean isFalling(EntityPlayerSP p, ScaffoldConfig c) {
         if (p.onGround || p.motionY >= 0) return false;
         AxisAlignedBB bb = p.getEntityBoundingBox();
         int startY = MathHelper.floor_double(bb.minY) - 1;
@@ -265,7 +264,7 @@ public class ClutchHandler {
 
     // ------------------------------------------------------------------ поиск места
 
-    private Plan findPlan(EntityPlayerSP p, ClutchConfig c) {
+    private Plan findPlan(EntityPlayerSP p, ScaffoldConfig c) {
         Vec3 eye = p.getPositionEyes(1.0F);
         AxisAlignedBB bb = p.getEntityBoundingBox();
 
@@ -388,7 +387,7 @@ public class ClutchHandler {
 
     // ------------------------------------------------------------------ блоки в руке
 
-    private boolean selectBlocks(EntityPlayerSP p, ClutchConfig c) {
+    private boolean selectBlocks(EntityPlayerSP p, ScaffoldConfig c) {
         if (isGoodBlock(p.getHeldItem())) return true;
         if (!c.autoSwitch) return false;
         int bestSlot = -1, bestCount = 0;

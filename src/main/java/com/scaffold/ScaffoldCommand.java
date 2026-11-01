@@ -1,6 +1,5 @@
-package com.fastbreak.clutch;
+package com.scaffold;
 
-import com.fastbreak.FastBreakMod;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -8,26 +7,26 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
-public class ClutchCommand extends CommandBase {
+public class ScaffoldCommand extends CommandBase {
 
-    private static final String P = EnumChatFormatting.DARK_AQUA + "[CL] " + EnumChatFormatting.RESET;
+    private static final String P = EnumChatFormatting.DARK_AQUA + "[SC] " + EnumChatFormatting.RESET;
 
     @Override
     public String getCommandName() {
-        return "clutch";
+        return "scaffold";
     }
 
     @Override
     public List<String> getCommandAliases() {
-        return Collections.singletonList("cl");
+        return Arrays.asList("sc", "cl");
     }
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/cl [toggle|mode|speed|clutchspeed|fall|void|search|reach|switch|switchback|noswing|delay|keep|hud]";
+        return "/sc [toggle|mode|speed|clutchspeed|fall|void|search|reach|switch|switchback|noswing|delay|keep|hud]";
     }
 
     @Override
@@ -42,7 +41,7 @@ public class ClutchCommand extends CommandBase {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        ClutchConfig c = FastBreakMod.clutchConfig;
+        ScaffoldConfig c = ScaffoldMod.config;
         if (args.length == 0) {
             status(sender, c);
             return;
@@ -52,17 +51,17 @@ public class ClutchCommand extends CommandBase {
 
         if (sub.equals("toggle") || sub.equals("on") || sub.equals("off")) {
             c.enabled = sub.equals("toggle") ? !c.enabled : sub.equals("on");
-            msg(sender, "Clutch " + onOff(c.enabled));
+            msg(sender, "Scaffold " + onOff(c.enabled));
         } else if (sub.equals("mode")) {
-            ClutchConfig.Mode m = ClutchConfig.Mode.parse(val);
+            ScaffoldConfig.Mode m = ScaffoldConfig.Mode.parse(val);
             if (m == null) {
-                msg(sender, EnumChatFormatting.RED + "Режимы: clutch, scaffold");
+                msg(sender, EnumChatFormatting.RED + "Режимы: scaffold, clutch");
                 return;
             }
             c.mode = m;
             msg(sender, "Режим: " + EnumChatFormatting.AQUA + m.display);
         } else if (sub.equals("speed") || sub.equals("clutchspeed")) {
-            if (args.length < 3) throw new CommandException("/cl " + sub + " <мин> <макс>, °/тик, например 40 70");
+            if (args.length < 3) throw new CommandException("/sc " + sub + " <мин> <макс>, °/тик, например 40 70");
             float a = number(args[1], 1, 180), b = number(args[2], 1, 180);
             float min = Math.min(a, b), max = Math.max(a, b);
             if (sub.equals("speed")) {
@@ -118,13 +117,13 @@ public class ClutchCommand extends CommandBase {
                     "fall", "void", "search", "reach", "switch", "switchback", "noswing", "delay", "keep", "hud");
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("mode")) {
-            return getListOfStringsMatchingLastWord(args, "clutch", "scaffold");
+            return getListOfStringsMatchingLastWord(args, "scaffold", "clutch");
         }
         return null;
     }
 
-    private void status(ICommandSender s, ClutchConfig c) {
-        msg(s, "Clutch: " + onOff(c.enabled) + EnumChatFormatting.GRAY + "  режим: "
+    private void status(ICommandSender s, ScaffoldConfig c) {
+        msg(s, "Scaffold: " + onOff(c.enabled) + EnumChatFormatting.GRAY + "  режим: "
                 + EnumChatFormatting.AQUA + c.mode.display);
         msg(s, EnumChatFormatting.GRAY + "speed=" + c.minSpeed + "-" + c.maxSpeed
                 + " clutchspeed=" + c.clutchMinSpeed + "-" + c.clutchMaxSpeed
@@ -141,7 +140,7 @@ public class ClutchCommand extends CommandBase {
         } catch (NumberFormatException e) {
             throw new CommandException("Не число: " + v);
         }
-        return ClutchConfig.clamp(f, min, max);
+        return ScaffoldConfig.clamp(f, min, max);
     }
 
     private static String onOff(boolean b) {

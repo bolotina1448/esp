@@ -1,4 +1,4 @@
-package com.fastbreak.clutch;
+package com.scaffold;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,10 +7,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
-public class ClutchConfig {
+public class ScaffoldConfig {
 
     public enum Mode {
-        /** Срабатывает только когда падаешь (сбили в войд / с высоты) — ставит блок под ноги. */
+        /** Только клатч: срабатывает, когда падаешь (сбили в войд / с высоты), и ставит блок под ноги. */
         CLUTCH("Clutch"),
         /** Обычный скаффолд: ставит блок под ноги всегда, когда под ними пусто (бридж). Клатч тоже работает. */
         SCAFFOLD("Scaffold");
@@ -33,7 +33,7 @@ public class ClutchConfig {
     private final File file;
 
     public boolean enabled = false;
-    public Mode mode = Mode.CLUTCH;
+    public Mode mode = Mode.SCAFFOLD;
 
     /** Скорость поворота (°/тик) в обычном скаффолде. */
     public float minSpeed = 35f;
@@ -64,7 +64,7 @@ public class ClutchConfig {
 
     public boolean hud = true;
 
-    public ClutchConfig(File file) {
+    public ScaffoldConfig(File file) {
         this.file = file;
     }
 
@@ -96,7 +96,7 @@ public class ClutchConfig {
             keepTicks = (int) clamp(num(p, "keepTicks", keepTicks), 0, 20);
             hud = bool(p, "hud", hud);
         } catch (Exception e) {
-            System.err.println("[Clutch] Failed to load config: " + e);
+            System.err.println("[Scaffold] Failed to load config: " + e);
         } finally {
             if (in != null) try { in.close(); } catch (Exception ignored) { }
         }
@@ -125,9 +125,9 @@ public class ClutchConfig {
             File parent = file.getParentFile();
             if (parent != null) parent.mkdirs();
             out = new FileOutputStream(file);
-            p.store(out, "Clutch / Scaffold config (modes: CLUTCH, SCAFFOLD)");
+            p.store(out, "Scaffold config (modes: CLUTCH, SCAFFOLD)");
         } catch (Exception e) {
-            System.err.println("[Clutch] Failed to save config: " + e);
+            System.err.println("[Scaffold] Failed to save config: " + e);
         } finally {
             if (out != null) try { out.close(); } catch (Exception ignored) { }
         }

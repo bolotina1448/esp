@@ -55,7 +55,7 @@ tasks.withType(JavaCompile::class) {
 }
 
 tasks.withType(org.gradle.jvm.tasks.Jar::class) {
-    archiveBaseName.set("FastBreak")
+    archiveBaseName.set("Scaffold")
     archiveVersion.set("1.8.9")
 }
 
