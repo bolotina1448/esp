@@ -45,7 +45,7 @@ jobs:
           target_commitish: ${{ github.sha }}
           make_latest: false
           body: |
-            SafeWalk для Minecraft 1.8.9 Forge / LabyMod. Работает только с блоком в руке, без приседания.
+            SafeWalk для Minecraft 1.8.9 Forge / LabyMod. Работает только с блоком в руке: у края жмёт шифт на пару тиков.
             Скачай `SafeWalk-1.8.9.jar` ниже и положи в `.minecraft/mods`.
             K — вкл/выкл, `/sw` — настройки. Совместим с модом Scaffold.
           files: build/libs/*.jar
