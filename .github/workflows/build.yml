@@ -45,7 +45,8 @@ jobs:
           target_commitish: ${{ github.sha }}
           make_latest: false
           body: |
-            FastBreak для Minecraft 1.8.9 Forge / LabyMod.
-            Скачай `fastbreak-1.0.0.jar` ниже и положи в `.minecraft/mods`.
-            Клавиша G — вкл/выкл, `/fb` — настройки, `/fb mode instant` или `/fb mode max` — почти мгновенное ломание.
+            FastBreak + Backtrack для Minecraft 1.8.9 Forge / LabyMod.
+            Скачай `FastBreak-1.8.9.jar` ниже и положи в `.minecraft/mods`.
+            G — FastBreak вкл/выкл, `/fb` — настройки.
+            H — Backtrack вкл/выкл, `/bt` — настройки.
           files: build/libs/*.jar

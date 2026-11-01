@@ -1,8 +1,8 @@
 [
   {
     "modid": "${modid}",
-    "name": "FastBreak",
-    "description": "FastBreak for HvH servers. Modes: Polar / Threshold / Multiplier / Blatant. Command: /fastbreak",
+    "name": "FastBreak + Backtrack",
+    "description": "FastBreak for HvH servers. Modes: Polar / Threshold / Multiplier / Blatant. Commands: /fb, /bt",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "url": "",
