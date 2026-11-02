@@ -61,6 +61,11 @@ public class FastBreakConfig {
     /** Не ускорять, если игрок в воздухе (меньше шансов на флаг). */
     public boolean onlyOnGround = true;
     public boolean hud = true;
+    /** Ускорять только подходящим инструментом и только блоки из его списка (ToolRules). */
+    public boolean toolsOnly = true;
+    /** INSTANT: через сколько тиков после начала ломания слать STOP (0 = в тот же тик, 1 тик = 0.05 с). */
+    public int instantDelay = 1;
+    public final ToolRules tools = new ToolRules();
 
     public FastBreakConfig(File file) {
         this.file = file;
@@ -112,6 +117,9 @@ public class FastBreakConfig {
             jitter = clamp(parseFloat(p.getProperty("jitter"), jitter), 0f, 0.2f);
             onlyOnGround = Boolean.parseBoolean(p.getProperty("onlyOnGround", String.valueOf(onlyOnGround)));
             hud = Boolean.parseBoolean(p.getProperty("hud", String.valueOf(hud)));
+            toolsOnly = Boolean.parseBoolean(p.getProperty("toolsOnly", String.valueOf(toolsOnly)));
+            instantDelay = (int) clamp(parseFloat(p.getProperty("instantDelay"), instantDelay), 0, 10);
+            tools.load(p);
         } catch (Exception e) {
             System.err.println("[FastBreak] Failed to load config: " + e);
         } finally {
@@ -129,6 +137,9 @@ public class FastBreakConfig {
         p.setProperty("jitter", fmt(jitter));
         p.setProperty("onlyOnGround", String.valueOf(onlyOnGround));
         p.setProperty("hud", String.valueOf(hud));
+        p.setProperty("toolsOnly", String.valueOf(toolsOnly));
+        p.setProperty("instantDelay", String.valueOf(instantDelay));
+        tools.save(p);
         OutputStream out = null;
         try {
             File parent = file.getParentFile();

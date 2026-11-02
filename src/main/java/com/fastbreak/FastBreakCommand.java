@@ -27,7 +27,7 @@ public class FastBreakCommand extends CommandBase {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/fastbreak [toggle|mode|threshold|multiplier|delay|jitter|ground|hud]";
+        return "/fb [toggle|mode|idelay|tools|list|add|remove|reset|threshold|multiplier|delay|jitter|ground|hud]";
     }
 
     @Override
@@ -78,6 +78,60 @@ public class FastBreakCommand extends CommandBase {
         } else if (sub.equals("ground")) {
             c.onlyOnGround = !c.onlyOnGround;
             msg(sender, "Только на земле: " + onOff(c.onlyOnGround));
+        } else if (sub.equals("idelay") || sub.equals("instantdelay")) {
+            c.instantDelay = (int) number(sender, val, c.instantDelay, 0f, 10f);
+            msg(sender, "Задержка Instant: " + c.instantDelay + " тик(ов) = " + (c.instantDelay * 50) + " мс"
+                    + EnumChatFormatting.GRAY + " (0 = сразу)");
+        } else if (sub.equals("tools") || sub.equals("toolsonly")) {
+            c.toolsOnly = !c.toolsOnly;
+            msg(sender, "Только инструментами по своим блокам: " + onOff(c.toolsOnly));
+        } else if (sub.equals("list")) {
+            ToolRules.Tool only = ToolRules.Tool.parse(val);
+            for (ToolRules.Tool t : ToolRules.Tool.values()) {
+                if (only != null && t != only) continue;
+                StringBuilder sb = new StringBuilder();
+                for (String n : c.tools.get(t)) {
+                    if (sb.length() > 0) sb.append(", ");
+                    sb.append(ToolRules.shortName(n));
+                }
+                msg(sender, EnumChatFormatting.AQUA + t.id + EnumChatFormatting.GRAY + " (" + t.ru + "): "
+                        + EnumChatFormatting.RESET + (sb.length() == 0 ? "—" : sb.toString()));
+            }
+            return;
+        } else if (sub.equals("add") || sub.equals("remove")) {
+            ToolRules.Tool t = ToolRules.Tool.parse(val);
+            if (t == null) {
+                msg(sender, EnumChatFormatting.RED + "/fb " + sub + " <sword|pickaxe|axe|shovel|shears> [блок]"
+                        + EnumChatFormatting.GRAY + " — без блока берётся тот, на который смотришь");
+                return;
+            }
+            String name = args.length > 2 ? args[2] : lookedBlockName();
+            if (name == null) {
+                msg(sender, EnumChatFormatting.RED + "Укажи блок или посмотри на него, например /fb " + sub + " pickaxe sandstone");
+                return;
+            }
+            if (sub.equals("add")) {
+                String added = c.tools.add(t, name);
+                if (added == null) {
+                    msg(sender, EnumChatFormatting.RED + "Нет такого блока: " + name);
+                    return;
+                }
+                msg(sender, "Добавлено: " + EnumChatFormatting.AQUA + t.id + EnumChatFormatting.RESET + " → " + ToolRules.shortName(added));
+            } else {
+                boolean ok = c.tools.remove(t, name);
+                msg(sender, ok ? "Убрано из " + t.id + ": " + ToolRules.shortName(name)
+                        : EnumChatFormatting.RED + "В списке " + t.id + " нет " + name);
+                if (!ok) return;
+            }
+        } else if (sub.equals("reset")) {
+            ToolRules.Tool t = ToolRules.Tool.parse(val);
+            if (t == null) {
+                for (ToolRules.Tool x : ToolRules.Tool.values()) c.tools.reset(x);
+                msg(sender, "Все списки блоков сброшены по умолчанию");
+            } else {
+                c.tools.reset(t);
+                msg(sender, "Список " + t.id + " сброшен по умолчанию");
+            }
         } else if (sub.equals("hud")) {
             c.hud = !c.hud;
             msg(sender, "HUD: " + onOff(c.hud));
@@ -92,12 +146,25 @@ public class FastBreakCommand extends CommandBase {
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
         if (args.length == 1) {
             return getListOfStringsMatchingLastWord(args,
-                    "toggle", "on", "off", "mode", "threshold", "multiplier", "delay", "jitter", "ground", "hud");
+                    "toggle", "on", "off", "mode", "idelay", "tools", "list", "add", "remove", "reset",
+                    "threshold", "multiplier", "delay", "jitter", "ground", "hud");
+        }
+        if (args.length == 2 && (args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("add")
+                || args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("reset"))) {
+            return getListOfStringsMatchingLastWord(args, "sword", "pickaxe", "axe", "shovel", "shears");
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("mode")) {
             return getListOfStringsMatchingLastWord(args, "polar", "threshold", "multiplier", "max", "instant");
         }
         return null;
+    }
+
+    private static String lookedBlockName() {
+        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getMinecraft();
+        net.minecraft.util.MovingObjectPosition mop = mc.objectMouseOver;
+        if (mc.theWorld == null || mop == null
+                || mop.typeOfHit != net.minecraft.util.MovingObjectPosition.MovingObjectType.BLOCK) return null;
+        return ToolRules.nameOf(mc.theWorld.getBlockState(mop.getBlockPos()).getBlock());
     }
 
     private void status(ICommandSender s, FastBreakConfig c) {
@@ -109,9 +176,12 @@ public class FastBreakCommand extends CommandBase {
                 + " ground=" + c.onlyOnGround);
         msg(s, EnumChatFormatting.GRAY + "Polar-пресет: threshold " + FastBreakConfig.POLAR_THRESHOLD
                 + "±" + FastBreakConfig.POLAR_JITTER + ", delay " + FastBreakConfig.POLAR_HIT_DELAY);
+        msg(s, EnumChatFormatting.GRAY + "Instant задержка: " + c.instantDelay + " тик(ов) ("
+                + (c.instantDelay * 50) + " мс)  только инструментами: " + onOff(c.toolsOnly));
         msg(s, EnumChatFormatting.GRAY + "Команды: " + Arrays.toString(new String[]{
-                "toggle", "mode <polar|threshold|multiplier|max|instant>", "threshold <0.05-1>",
-                "multiplier <1-5>", "delay <0-5>", "jitter <0-0.2>", "ground", "hud"}));
+                "toggle", "mode <polar|threshold|multiplier|max|instant>", "idelay <0-10>", "tools",
+                "list [инструмент]", "add <инструмент> [блок]", "remove <инструмент> [блок]", "reset [инструмент]",
+                "threshold <0.05-1>", "multiplier <1-5>", "delay <0-5>", "jitter <0-0.2>", "ground", "hud"}));
     }
 
     private float number(ICommandSender s, String v, float def, float min, float max) throws CommandException {

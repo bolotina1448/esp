@@ -59,6 +59,8 @@ public class FastBreakHandler {
 
     private BlockPos lastPos;
     private float rolledThreshold = 1f;
+    private BlockPos instantPos;
+    private int instantTicks;
 
     @SubscribeEvent
     public void onKey(InputEvent.KeyInputEvent event) {
@@ -81,6 +83,21 @@ public class FastBreakHandler {
         if (pc.isInCreativeMode()) return;
 
         try {
+            // 0) Только подходящий инструмент и блок из его списка — иначе всё как в ваниле
+            if (c.toolsOnly) {
+                BlockPos target = fHitting.getBoolean(pc) ? (BlockPos) fCurrentBlock.get(pc) : null;
+                MovingObjectPosition look = mc.objectMouseOver;
+                if (target == null && look != null && look.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+                    target = look.getBlockPos();
+                }
+                Block tb = target == null ? null : mc.theWorld.getBlockState(target).getBlock();
+                if (tb == null || !c.tools.allows(mc.thePlayer.getHeldItem(), tb)) {
+                    lastPos = null;
+                    instantPos = null;
+                    return;
+                }
+            }
+
             // 1) Задержка между блоками (ванила = 5 тиков)
             int maxDelay = c.effectiveHitDelay();
             if (fHitDelay.getInt(pc) > maxDelay) {
@@ -90,6 +107,7 @@ public class FastBreakHandler {
             // 2) Ускорение ломания текущего блока
             if (!fHitting.getBoolean(pc)) {
                 lastPos = null;
+                instantPos = null;
                 return;
             }
             BlockPos pos = (BlockPos) fCurrentBlock.get(pc);
@@ -104,8 +122,17 @@ public class FastBreakHandler {
             float step = block.getPlayerRelativeBlockHardness(mc.thePlayer, mc.theWorld, pos);
             if (step <= 0f || step >= 1f) return; // неломаемый или и так ломается мгновенно
 
-            // INSTANT: START уже ушёл в этом тике — сразу шлём STOP и ломаем блок на клиенте (1 тик)
+            // INSTANT: шлём STOP через instantDelay тиков после START (0 = в тот же тик) и ломаем блок на клиенте
             if (c.mode == FastBreakConfig.Mode.INSTANT) {
+                if (!pos.equals(instantPos)) {
+                    instantPos = pos;
+                    instantTicks = 0;
+                }
+                if (instantTicks < c.instantDelay) {
+                    instantTicks++;
+                    return;
+                }
+                instantPos = null;
                 EnumFacing face = EnumFacing.UP;
                 MovingObjectPosition mop = mc.objectMouseOver;
                 if (mop != null && mop.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
@@ -156,7 +183,15 @@ public class FastBreakHandler {
     public void onOverlay(RenderGameOverlayEvent.Text event) {
         FastBreakConfig c = FastBreakMod.config;
         if (c.enabled && c.hud) {
-            event.right.add(EnumChatFormatting.AQUA + "FastBreak " + EnumChatFormatting.GRAY + c.mode.display);
+            String extra = "";
+            if (c.mode == FastBreakConfig.Mode.INSTANT) extra = " " + c.instantDelay + "t";
+            if (c.toolsOnly && mc.thePlayer != null) {
+                MovingObjectPosition look = mc.objectMouseOver;
+                boolean ok = look != null && look.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
+                        && c.tools.allows(mc.thePlayer.getHeldItem(), mc.theWorld.getBlockState(look.getBlockPos()).getBlock());
+                extra += ok ? EnumChatFormatting.GREEN + " \u25CF" : EnumChatFormatting.DARK_GRAY + " \u25CF";
+            }
+            event.right.add(EnumChatFormatting.AQUA + "FastBreak " + EnumChatFormatting.GRAY + c.mode.display + extra);
         }
     }
 

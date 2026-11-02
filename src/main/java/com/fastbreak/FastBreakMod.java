@@ -17,7 +17,7 @@ import org.lwjgl.input.Keyboard;
 
 import java.io.File;
 
-@Mod(modid = FastBreakMod.MODID, name = "FastBreak", version = "1.2.0",
+@Mod(modid = FastBreakMod.MODID, name = "FastBreak", version = "1.3.0",
         acceptedMinecraftVersions = "[1.8.9]", acceptableRemoteVersions = "*")
 public class FastBreakMod {
 
