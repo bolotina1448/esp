@@ -23,4 +23,4 @@ plugins {
 }
 
 
-rootProject.name = "SafeWalk"
+rootProject.name = "BlockHitMining"

@@ -1,4 +1,4 @@
-name: Build SafeWalk
+name: Build BlockHitMining
 on:
   push:
   pull_request:
@@ -33,19 +33,19 @@ jobs:
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
-          name: SafeWalk-1.8.9
+          name: BlockHitMining-1.8.9
           path: build/libs/*.jar
 
       - name: Publish release
         if: github.event_name != 'pull_request'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: safewalk-latest
-          name: SafeWalk 1.8.9 (latest build)
+          tag_name: blockhit-latest
+          name: BlockHitMining 1.8.9 (latest build)
           target_commitish: ${{ github.sha }}
           make_latest: false
           body: |
-            SafeWalk для Minecraft 1.8.9 Forge / LabyMod. Работает только с блоком в руке: у края жмёт шифт на пару тиков.
-            Скачай `SafeWalk-1.8.9.jar` ниже и положи в `.minecraft/mods`.
-            K — вкл/выкл, `/sw` — настройки. Совместим с модом Scaffold.
+            1.7 блокхит при копании для Minecraft 1.8.9 Forge / LabyMod.
+            Зажми ЛКМ + ПКМ с мечом, глядя на блок: блокируешь и ломаешь одновременно, как в 1.7.10.
+            Скачай `BlockHitMining-1.8.9.jar` ниже и положи в `.minecraft/mods`. `/bhm` — вкл/выкл.
           files: build/libs/*.jar

@@ -1,8 +1,8 @@
 [
   {
     "modid": "${modid}",
-    "name": "SafeWalk",
-    "description": "SafeWalk without sneaking, only while holding a block. Command: /sw",
+    "name": "BlockHit Mining",
+    "description": "1.7.10-style mining while blocking with a sword: hold LMB + RMB on a block. Command: /bhm",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "url": "",
