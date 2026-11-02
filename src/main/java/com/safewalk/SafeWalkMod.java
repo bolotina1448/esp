@@ -11,7 +11,7 @@ import org.lwjgl.input.Keyboard;
 
 import java.io.File;
 
-@Mod(modid = SafeWalkMod.MODID, name = "SafeWalk", version = "1.1.0",
+@Mod(modid = SafeWalkMod.MODID, name = "SafeWalk", version = "1.2.0",
         acceptedMinecraftVersions = "[1.8.9]", acceptableRemoteVersions = "*")
 public class SafeWalkMod {
 

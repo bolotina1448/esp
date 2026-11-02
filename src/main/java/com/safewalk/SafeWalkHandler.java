@@ -10,6 +10,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovementInput;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
@@ -62,7 +63,8 @@ public class SafeWalkHandler {
     public void onOverlay(RenderGameOverlayEvent.Text event) {
         SafeWalkConfig c = SafeWalkMod.config;
         if (!c.enabled || !c.hud || mc.thePlayer == null) return;
-        boolean on = !c.onlyBlocks || holdingBlock(mc.thePlayer);
+        boolean on = (!c.onlyBlocks || holdingBlock(mc.thePlayer))
+                && (!c.onlyLooking || lookingAtStandingBlock(mc.thePlayer));
         event.right.add((on ? EnumChatFormatting.AQUA : EnumChatFormatting.DARK_GRAY) + "SafeWalk "
                 + EnumChatFormatting.GRAY + c.mode.display + (autoSneak ? EnumChatFormatting.GREEN + " ●" : ""));
     }
@@ -146,6 +148,7 @@ public class SafeWalkHandler {
         SafeWalkConfig c = SafeWalkMod.config;
         boolean eligible = p != null && mc.theWorld != null && c.enabled
                 && (!c.onlyBlocks || holdingBlock(p))
+                && (!c.onlyLooking || lookingAtStandingBlock(p))
                 && p.onGround && !in.jump && !in.sneak // в прыжке не держим; если приседаешь сам — держит ванила
                 && !p.capabilities.isFlying && !p.isInWater() && !p.isInLava() && !p.isOnLadder();
         if (!eligible) {
@@ -238,6 +241,19 @@ public class SafeWalkHandler {
 
     private boolean noGround(EntityPlayerSP p, AxisAlignedBB box) {
         return mc.theWorld.getCollidingBoundingBoxes(p, box).isEmpty();
+    }
+
+    /** Прицел на блоке, на котором ты стоишь (на любом из блоков под хитбоксом, если стоишь на стыке). */
+    private boolean lookingAtStandingBlock(EntityPlayerSP p) {
+        MovingObjectPosition mop = mc.objectMouseOver;
+        if (mop == null || mop.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || mop.getBlockPos() == null) {
+            return false;
+        }
+        BlockPos pos = mop.getBlockPos();
+        AxisAlignedBB bb = p.getEntityBoundingBox();
+        if (pos.getY() != MathHelper.floor_double(bb.minY - 0.001D)) return false;
+        return pos.getX() < bb.maxX && pos.getX() + 1 > bb.minX
+                && pos.getZ() < bb.maxZ && pos.getZ() + 1 > bb.minZ;
     }
 
     static boolean holdingBlock(EntityPlayerSP p) {

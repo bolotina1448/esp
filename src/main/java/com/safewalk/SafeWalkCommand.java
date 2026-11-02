@@ -25,7 +25,7 @@ public class SafeWalkCommand extends CommandBase {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/sw [toggle|on|off|mode|ticks|blocks|hud]";
+        return "/sw [toggle|on|off|mode|ticks|blocks|look|hud]";
     }
 
     @Override
@@ -46,8 +46,9 @@ public class SafeWalkCommand extends CommandBase {
                     + EnumChatFormatting.AQUA + c.mode.display + EnumChatFormatting.GRAY
                     + "  шифт: " + c.minTicks + "-" + c.maxTicks + " тик.");
             msg(sender, EnumChatFormatting.GRAY + "только с блоком: " + onOff(c.onlyBlocks)
+                    + EnumChatFormatting.GRAY + "  только взгляд на блок под ногами: " + onOff(c.onlyLooking)
                     + EnumChatFormatting.GRAY + "  hud: " + onOff(c.hud));
-            msg(sender, EnumChatFormatting.GRAY + "Команды: /sw toggle | mode <sneak|silent> | ticks <мин> <макс> | blocks | hud");
+            msg(sender, EnumChatFormatting.GRAY + "Команды: /sw toggle | mode <sneak|silent> | ticks <мин> <макс> | blocks | look | hud");
             return;
         }
         String sub = args[0].toLowerCase();
@@ -79,6 +80,9 @@ public class SafeWalkCommand extends CommandBase {
         } else if (sub.equals("blocks")) {
             c.onlyBlocks = !c.onlyBlocks;
             msg(sender, "Только с блоком в руке: " + onOff(c.onlyBlocks));
+        } else if (sub.equals("look")) {
+            c.onlyLooking = !c.onlyLooking;
+            msg(sender, "Только когда смотришь на блок, на котором стоишь: " + onOff(c.onlyLooking));
         } else if (sub.equals("hud")) {
             c.hud = !c.hud;
             msg(sender, "HUD: " + onOff(c.hud));
@@ -92,7 +96,7 @@ public class SafeWalkCommand extends CommandBase {
     @Override
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
         if (args.length == 1) {
-            return getListOfStringsMatchingLastWord(args, "toggle", "on", "off", "mode", "ticks", "blocks", "hud");
+            return getListOfStringsMatchingLastWord(args, "toggle", "on", "off", "mode", "ticks", "blocks", "look", "hud");
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("mode")) {
             return getListOfStringsMatchingLastWord(args, "sneak", "silent");

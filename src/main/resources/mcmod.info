@@ -2,7 +2,7 @@
   {
     "modid": "${modid}",
     "name": "SafeWalk",
-    "description": "SafeWalk without sneaking, only while holding a block. Command: /sw",
+    "description": "SafeWalk (auto-sneak at edges) only while holding a block and looking at the block you stand on. Command: /sw",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "url": "",

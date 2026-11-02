@@ -40,6 +40,8 @@ public class SafeWalkConfig {
     public boolean enabled = true;
     /** Работать только когда в руке блок. */
     public boolean onlyBlocks = true;
+    /** Работать только когда смотришь на блок, на котором стоишь. */
+    public boolean onlyLooking = true;
     public boolean hud = true;
 
     public SafeWalkConfig(File file) {
@@ -58,6 +60,7 @@ public class SafeWalkConfig {
             p.load(in);
             enabled = bool(p, "enabled", enabled);
             onlyBlocks = bool(p, "onlyBlocks", onlyBlocks);
+            onlyLooking = bool(p, "onlyLooking", onlyLooking);
             hud = bool(p, "hud", hud);
             Mode m = Mode.parse(p.getProperty("mode"));
             if (m != null) mode = m;
@@ -74,6 +77,7 @@ public class SafeWalkConfig {
         Properties p = new Properties();
         p.setProperty("enabled", String.valueOf(enabled));
         p.setProperty("onlyBlocks", String.valueOf(onlyBlocks));
+        p.setProperty("onlyLooking", String.valueOf(onlyLooking));
         p.setProperty("hud", String.valueOf(hud));
         p.setProperty("mode", mode.name());
         p.setProperty("minTicks", String.valueOf(minTicks));
