@@ -63,6 +63,8 @@ public class FastBreakConfig {
     public boolean hud = true;
     /** Ускорять только подходящим инструментом и только блоки из его списка (ToolRules). */
     public boolean toolsOnly = true;
+    /** Убирать ванильную паузу 5 тиков между блоками всегда, даже когда FastBreak выключен. */
+    public boolean noBreakDelay = true;
     /** INSTANT: через сколько тиков после начала ломания слать STOP (0 = в тот же тик, 1 тик = 0.05 с). */
     public int instantDelay = 1;
     public final ToolRules tools = new ToolRules();
@@ -118,6 +120,7 @@ public class FastBreakConfig {
             onlyOnGround = Boolean.parseBoolean(p.getProperty("onlyOnGround", String.valueOf(onlyOnGround)));
             hud = Boolean.parseBoolean(p.getProperty("hud", String.valueOf(hud)));
             toolsOnly = Boolean.parseBoolean(p.getProperty("toolsOnly", String.valueOf(toolsOnly)));
+            noBreakDelay = Boolean.parseBoolean(p.getProperty("noBreakDelay", String.valueOf(noBreakDelay)));
             instantDelay = (int) clamp(parseFloat(p.getProperty("instantDelay"), instantDelay), 0, 10);
             tools.load(p);
         } catch (Exception e) {
@@ -138,6 +141,7 @@ public class FastBreakConfig {
         p.setProperty("onlyOnGround", String.valueOf(onlyOnGround));
         p.setProperty("hud", String.valueOf(hud));
         p.setProperty("toolsOnly", String.valueOf(toolsOnly));
+        p.setProperty("noBreakDelay", String.valueOf(noBreakDelay));
         p.setProperty("instantDelay", String.valueOf(instantDelay));
         tools.save(p);
         OutputStream out = null;

@@ -79,8 +79,18 @@ public class FastBreakHandler {
 
         FastBreakConfig c = FastBreakMod.config;
         PlayerControllerMP pc = mc.playerController;
-        if (!c.enabled || mc.thePlayer == null || mc.theWorld == null || pc == null) return;
-        if (pc.isInCreativeMode()) return;
+        if (mc.thePlayer == null || mc.theWorld == null || pc == null) return;
+
+        // Без паузы между блоками (ванила ставит 5 тиков после каждого сломанного блока).
+        // Работает и когда FastBreak выключен.
+        if (!c.enabled) {
+            if (c.noBreakDelay) clearHitDelay(pc);
+            return;
+        }
+        if (pc.isInCreativeMode()) {
+            if (c.noBreakDelay) clearHitDelay(pc);
+            return;
+        }
 
         try {
             // 0) Только подходящий инструмент и блок из его списка — иначе всё как в ваниле
@@ -94,6 +104,7 @@ public class FastBreakHandler {
                 if (tb == null || !c.tools.allows(mc.thePlayer.getHeldItem(), tb)) {
                     lastPos = null;
                     instantPos = null;
+                    if (c.noBreakDelay) clearHitDelay(pc);
                     return;
                 }
             }
@@ -173,6 +184,15 @@ public class FastBreakHandler {
             if (damage + step >= rolledThreshold) {
                 fDamage.setFloat(pc, 1f);
             }
+        } catch (IllegalAccessException e) {
+            reflectionOk = false;
+            System.err.println("[FastBreak] " + e);
+        }
+    }
+
+    private void clearHitDelay(PlayerControllerMP pc) {
+        try {
+            if (fHitDelay.getInt(pc) > 0) fHitDelay.setInt(pc, 0);
         } catch (IllegalAccessException e) {
             reflectionOk = false;
             System.err.println("[FastBreak] " + e);

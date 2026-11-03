@@ -27,7 +27,7 @@ public class FastBreakCommand extends CommandBase {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/fb [toggle|mode|idelay|tools|list|add|remove|reset|threshold|multiplier|delay|jitter|ground|hud]";
+        return "/fb [toggle|mode|idelay|nodelay|tools|list|add|remove|reset|threshold|multiplier|delay|jitter|ground|hud]";
     }
 
     @Override
@@ -82,6 +82,9 @@ public class FastBreakCommand extends CommandBase {
             c.instantDelay = (int) number(sender, val, c.instantDelay, 0f, 10f);
             msg(sender, "Задержка Instant: " + c.instantDelay + " тик(ов) = " + (c.instantDelay * 50) + " мс"
                     + EnumChatFormatting.GRAY + " (0 = сразу)");
+        } else if (sub.equals("nodelay")) {
+            c.noBreakDelay = !c.noBreakDelay;
+            msg(sender, "Без паузы между блоками (даже когда FB выключен): " + onOff(c.noBreakDelay));
         } else if (sub.equals("tools") || sub.equals("toolsonly")) {
             c.toolsOnly = !c.toolsOnly;
             msg(sender, "Только инструментами по своим блокам: " + onOff(c.toolsOnly));
@@ -146,7 +149,7 @@ public class FastBreakCommand extends CommandBase {
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
         if (args.length == 1) {
             return getListOfStringsMatchingLastWord(args,
-                    "toggle", "on", "off", "mode", "idelay", "tools", "list", "add", "remove", "reset",
+                    "toggle", "on", "off", "mode", "idelay", "nodelay", "tools", "list", "add", "remove", "reset",
                     "threshold", "multiplier", "delay", "jitter", "ground", "hud");
         }
         if (args.length == 2 && (args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("add")
@@ -177,9 +180,10 @@ public class FastBreakCommand extends CommandBase {
         msg(s, EnumChatFormatting.GRAY + "Polar-пресет: threshold " + FastBreakConfig.POLAR_THRESHOLD
                 + "±" + FastBreakConfig.POLAR_JITTER + ", delay " + FastBreakConfig.POLAR_HIT_DELAY);
         msg(s, EnumChatFormatting.GRAY + "Instant задержка: " + c.instantDelay + " тик(ов) ("
-                + (c.instantDelay * 50) + " мс)  только инструментами: " + onOff(c.toolsOnly));
+                + (c.instantDelay * 50) + " мс)  только инструментами: " + onOff(c.toolsOnly)
+                + EnumChatFormatting.GRAY + "  без паузы между блоками: " + onOff(c.noBreakDelay));
         msg(s, EnumChatFormatting.GRAY + "Команды: " + Arrays.toString(new String[]{
-                "toggle", "mode <polar|threshold|multiplier|max|instant>", "idelay <0-10>", "tools",
+                "toggle", "mode <polar|threshold|multiplier|max|instant>", "idelay <0-10>", "nodelay", "tools",
                 "list [инструмент]", "add <инструмент> [блок]", "remove <инструмент> [блок]", "reset [инструмент]",
                 "threshold <0.05-1>", "multiplier <1-5>", "delay <0-5>", "jitter <0-0.2>", "ground", "hud"}));
     }
