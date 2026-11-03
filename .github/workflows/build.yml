@@ -45,9 +45,7 @@ jobs:
           target_commitish: ${{ github.sha }}
           make_latest: false
           body: |
-            FastBreak + Backtrack + Clutch для Minecraft 1.8.9 Forge / LabyMod.
+            FastBreak для Minecraft 1.8.9 Forge / LabyMod.
             Скачай `FastBreak-1.8.9.jar` ниже и положи в `.minecraft/mods`.
             G — FastBreak вкл/выкл, `/fb` — настройки.
-            H — Backtrack вкл/выкл, `/bt` — настройки.
-            J — Clutch/Scaffold вкл/выкл, `/cl` — настройки.
           files: build/libs/*.jar
